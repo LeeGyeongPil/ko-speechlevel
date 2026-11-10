@@ -1,0 +1,4 @@
+{"role": "user", "content": "서버 어떻게 켜?"}
+{"role": "assistant", "content": "다음 명령을 실행해 주세요. 그러면 서버가 켜집니다."}
+{"messages": [{"role": "user", "content": "재시작은?"}, {"role": "assistant", "content": "먼저 서버를 끄면 돼. 그다음 다시 켜세요."}]}
+{"role": "assistant", "content": 42}

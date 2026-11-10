@@ -1,0 +1,24 @@
+# Offline example: the "echo" provider returns each prompt unchanged, so the assertion
+# checks the hand-written answers below (not real model output). No LLM call, no API key.
+description: ko-speechlevel assertion demo (echo provider)
+prompts:
+  - '{{answer}}'
+providers:
+  - echo
+tests:
+  - description: polite answer (expected to pass)
+    vars:
+      answer: '설치가 끝났습니다. 다음 단계로 가 볼게요.'
+    assert:
+      - type: javascript
+        value: file://speechlevel.mjs
+        config:
+          expect: polite
+  - description: mixed answer (expected to fail)
+    vars:
+      answer: '설치가 끝났습니다. 이제 서버를 켜면 돼.'
+    assert:
+      - type: javascript
+        value: file://speechlevel.mjs
+        config:
+          expect: polite

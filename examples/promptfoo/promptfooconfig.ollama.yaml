@@ -1,0 +1,17 @@
+# Optional: real model answers from a local Ollama server. May be slow, skipped if you have none.
+#   OLLAMA_BASE_URL=http://127.0.0.1:11434 npx promptfoo eval -c promptfooconfig.ollama.yaml
+description: ko-speechlevel assertion on a local Ollama model
+prompts:
+  - '다음 질문에 한국어 존댓말로 두 문장으로 답해 주세요: {{question}}'
+providers:
+  - id: ollama:chat:llama3.2
+    config:
+      apiBaseUrl: ${OLLAMA_BASE_URL:-http://127.0.0.1:11434}
+tests:
+  - vars:
+      question: 서버를 다시 켜는 방법을 알려 줘.
+    assert:
+      - type: javascript
+        value: file://speechlevel.mjs
+        config:
+          expect: polite

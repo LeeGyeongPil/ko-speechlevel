@@ -1,0 +1,13 @@
+{
+  "name": "ko-speechlevel-promptfoo-example",
+  "private": true,
+  "type": "module",
+  "description": "promptfoo evaluation using the ko-speechlevel assertion (echo provider, no LLM calls).",
+  "scripts": {
+    "eval": "node run-eval.mjs"
+  },
+  "dependencies": {
+    "ko-speechlevel": "file:../..",
+    "promptfoo": "0.125.1"
+  }
+}
