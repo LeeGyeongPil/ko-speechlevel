@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-11
+
+### Security
+
+- Pin `glob` 14.0.4, `minimatch` 11.0.6 and `basic-ftp` 6.2.6 through `overrides` in `examples/promptfoo` (GHSA-3g3m-2fjr-6pw4, GHSA-g3hv-75wg-m249, GHSA-c475-qrg2-pj4r). They were transitive dependencies of the example only; the published package has no runtime dependencies and its files are unchanged.
+- The overrides force major versions outside the ranges that `promptfoo` and its dependencies declare, because no in-range patched release exists. Remove them once `promptfoo` accepts `glob` 14 and `minimatch` 11.
+
 ## [0.1.0] - 2026-11-11
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "ko-speechlevel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic Korean speech-level (honorific) consistency checker for LLM output: flags sentences that slip from polite to casual, with offsets. Library, CLI, promptfoo assertion, vitest matcher, streaming checker.",
   "keywords": ["korean", "speech-level", "honorific", "llm", "evaluation", "promptfoo", "vitest", "assertion", "lint"],
   "license": "MIT",
