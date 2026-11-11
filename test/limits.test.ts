@@ -59,6 +59,14 @@ describe('input limits and errors', () => {
     expect(check('“'.repeat(200_000)).judged).toBe(0);
   });
 
+  it('handles 250,000 unclosed mid-line "<!--" openers on one line', LIMIT, () => {
+    const text = '설명입니다 ' + '<!--'.repeat(250_000) + ' 끝났다.';
+    expect(check(text).judged).toBeGreaterThan(0);
+    const stream = createStreamChecker();
+    for (let i = 0; i < text.length; i += 1000) stream.push(text.slice(i, i + 1000));
+    expect(stream.end().judged).toBeGreaterThan(0);
+  });
+
   it('rejects input over maxLength with ERR_INPUT_TOO_LARGE and a hint', () => {
     for (const run of [
       () => check('가'.repeat(11), { maxLength: 10 }),

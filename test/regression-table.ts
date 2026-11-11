@@ -132,6 +132,8 @@ export const rowsRound2: Row[] = [
   { name: 'tab indented code block', text: '예시입니다.\n\n\techo 끝났다.\n\n끝입니다.', options: polite, violations: [] },
   { name: 'HTML comment on its own line', text: '준비됐습니다.\n<!-- 끝났다. -->', options: polite, violations: [] },
   { name: 'HTML comment across lines', text: '<!--\n메모: 이건 끝났다.\n-->\n준비됐습니다.', options: polite, violations: [] },
+  { name: 'indented code at the very start of the document', text: '    맨 앞 들여쓰기 끝났다.\n\n설명입니다.', options: polite, violations: [] },
+  { name: 'tab-indented code at the very start of the document', text: '\t탭 코드 끝났다.\n\n설명입니다.', options: polite, violations: [] },
   { name: 'HTML comment after a polite sentence', text: '준비됐습니다 <!-- 끝났다. --> 이어서 진행합니다.', options: polite, violations: [] },
 
   // ---- positives ----
@@ -152,6 +154,12 @@ export const rowsRound2: Row[] = [
   { name: 'indented line right after a paragraph is not code', text: '설명합니다.\n    그래서 끝났다.', options: polite, violations: ['그래서 끝났다.'] },
   { name: 'indented continuation of a list item is judged', text: '- 먼저 합니다\n\n    그다음 켜면 돼.', options: polite, violations: ['그다음 켜면 돼.'] },
   { name: 'plain text after an indented code block', text: '예시입니다.\n\n    echo 끝났다.\n\n그래서 끝났다.', options: polite, violations: ['그래서 끝났다.'] },
+  {
+    name: 'unclosed mid-line HTML comment opener does not hide the rest',
+    text: 'HTML 주석은 <!-- 로 시작합니다. 이제 끝났어.\n다음 줄도 반말이야.',
+    options: polite,
+    violations: ['이제 끝났어.', '다음 줄도 반말이야.'],
+  },
   { name: 'plain sentence after an HTML comment', text: '<!-- 메모 -->\n끝났다.', options: polite, violations: ['끝났다.'] },
   { name: 'plain sentence before an HTML comment', text: '준비됐다 <!-- 메모입니다 -->', options: polite, violations: ['준비됐다 <!-- 메모입니다 -->'] },
 ];

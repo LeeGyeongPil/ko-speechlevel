@@ -83,11 +83,19 @@ export class Scanner {
   // Indented code and HTML comments.
   private lineIndent = 0; // width of the leading blanks of the current line (tab = 4)
   private lineHasContent = false; // a non-blank character was seen on the current line
-  private prevBlank = false; // the previous line was blank
+  private prevBlank = true; // the previous line was blank (the start of the document counts as blank)
   private inIndentedCode = false;
   private listContext = false; // inside a list: indented lines continue an item, they are not code
   private htmlProbe = 0; // how many characters of "<!--" were just seen
   private htmlComment = false; // inside <!-- ... -->, may span lines
+  private bodySeen = 0; // non-blank body characters seen so far on the current line
+  // A "<!--" in the middle of a line is held back until the line ends or "-->" arrives: it is a
+  // comment only if it closes on the same line (CommonMark), otherwise it is plain text.
+  private hold: string | null = null;
+  private holdLen = 0; // characters held (counted by code point)
+  private holdTail = ''; // last three held characters, to spot "-->" without re-reading the buffer
+  private replaying = false; // the held characters are being fed back in
+  private noComment = false; // while replaying an unclosed "<!--": treat it as text
   private dashRun = 0;
 
   // Inline state (reset at every line end).
@@ -150,6 +158,7 @@ export class Scanner {
       this.held = '';
       this.consume(h);
     }
+    if (this.hold !== null) this.releaseHold(false);
     if (this.phase === 'lead') this.decideLead(true);
     this.pend = null;
     this.closeRegion();
@@ -159,6 +168,10 @@ export class Scanner {
   // ---- character dispatch -------------------------------------------------------------
 
   private consume(ch: string): void {
+    if (this.hold !== null) {
+      this.holdChar(ch);
+      return;
+    }
     if (this.pend) this.resolvePending(ch);
     if (ch === '\n') {
       this.newline();
@@ -224,6 +237,7 @@ export class Scanner {
     this.quoteCloser = '';
     this.htmlProbe = 0;
     this.dashRun = 0;
+    this.bodySeen = 0;
     this.closeRegion();
     this.emitSentence();
     this.prevBlank = !this.lineHasContent;
@@ -426,7 +440,31 @@ export class Scanner {
 
   // ---- inline characters ----------------------------------------------------------------
 
+  /** Add a character to the held "<!--" candidate and decide as soon as the answer is known. */
+  private holdChar(ch: string): void {
+    this.hold = (this.hold ?? '') + ch;
+    this.holdLen += 1;
+    this.holdTail = (this.holdTail + ch).slice(-3);
+    if (this.holdLen <= HTML_OPEN.length && !HTML_OPEN.startsWith(this.hold)) this.releaseHold(false);
+    else if (ch === '\n') this.releaseHold(false);
+    else if (this.holdLen >= HTML_OPEN.length + 3 && this.holdTail === '-->') this.releaseHold(true);
+  }
+
+  /** Feed the held characters back in, as a comment (closed on this line) or as plain text. */
+  private releaseHold(closed: boolean): void {
+    const held = this.hold ?? '';
+    this.hold = null;
+    this.holdLen = 0;
+    this.holdTail = '';
+    this.replaying = true;
+    this.noComment = !closed;
+    for (const ch of held) this.consume(ch);
+    this.replaying = false;
+    this.noComment = false;
+  }
+
   private body(ch: string): void {
+    if (!isWs(ch)) this.bodySeen += 1;
     if (this.tickRun > 0 && ch !== '`') {
       if (this.inlineCode === 0) this.inlineCode = this.tickRun;
       else if (this.tickRun === this.inlineCode) this.inlineCode = 0;
@@ -454,9 +492,19 @@ export class Scanner {
         return;
       }
     }
+    if (ch === '<' && this.bodySeen > 1 && !this.replaying) {
+      // Mid-line "<": it may start a comment, so hold it (and what follows) until it is known.
+      this.bodySeen -= 1;
+      this.hold = ch;
+      this.holdLen = 1;
+      this.holdTail = ch;
+      return;
+    }
     if (ch === HTML_OPEN.charAt(this.htmlProbe)) {
       this.htmlProbe += 1;
-      if (this.htmlProbe === HTML_OPEN.length) {
+      if (this.htmlProbe === HTML_OPEN.length && this.noComment) {
+        this.htmlProbe = 0; // unclosed on this line: "<!--" stays plain text
+      } else if (this.htmlProbe === HTML_OPEN.length) {
         // "<!--" itself stays visible text; drop it from the ending tail and mask what follows.
         this.htmlProbe = 0;
         this.htmlComment = true;

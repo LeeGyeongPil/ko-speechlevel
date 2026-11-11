@@ -4,6 +4,8 @@ import { chunked, readExample } from './support.ts';
 
 const samples: Record<string, string> = {
   emphasis: '설치했습니다. **이제 끝났어.** 다음 단계입니다. *끝났어*. _됐다._ __했어.__ ~~그만.~~ **`npm i` 하면 돼.**',
+  unclosedComment: 'HTML 주석은 <!-- 로 시작합니다. 이제 끝났어.\n다음 줄도 반말이야.\n준비됐습니다 <!-- x --> 했어. <b>굵게</b> 했어.',
+  startIndented: '    맨 앞 들여쓰기 끝났다.\n\n설명입니다.\n\t탭 코드 끝났다.',
   indentedAndComment: '예시입니다.\n\n    echo 끝났다.\n\n    b 한다.\n\n<!-- 메모: 끝났다.\n끝! -->\n준비됐습니다 <!-- x --> 했어.\n- 목록입니다\n\n    이어서 해.',
   mixed: readExample('mixed.md'),
   polite: readExample('polite.md'),
