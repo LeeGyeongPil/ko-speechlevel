@@ -1,5 +1,7 @@
 # ko-speechlevel
 
+**한국어** | [English](README.en.md)
+
 > **English summary** — A deterministic checker that flags Korean sentences whose speech level (honorific style) slips, for example from polite `-습니다/-요` to casual `-해/-다`, and reports exact offsets. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install from GitHub: `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2` (the npm registry release is planned, not published yet). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
 
 LLM 답변이 "했습니다"로 시작해 "켜면 돼."로 끝나는 식으로 **말투가 중간에 바뀌는 문제**를 규칙만으로 찾아 주는 검사기입니다. 다른 모델 호출 없이 같은 입력에는 항상 같은 결과가 나오므로, 평가 파이프라인과 CI의 단언(assertion)으로 쓰기 좋습니다.
