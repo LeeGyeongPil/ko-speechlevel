@@ -5,6 +5,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-11
+
+### Fixed
+
+- An unclosed `<!--` in the middle of a line no longer hides the rest of the document. It is a comment only when `-->` follows on the same line (CommonMark); otherwise it is plain text, so later casual sentences are checked. A comment that opens at the start of a line still spans lines.
+- Indented code (4 spaces or a tab) on the very first line of a document is treated as code, like one after a blank line, so it no longer causes a false positive.
+
+### Changed
+
+- `examples/promptfoo` no longer has its own `package.json`, lock file or `overrides`. `npm run example:promptfoo` runs `npx --yes promptfoo@0.125.1` and imports the built `dist` adapter by relative path. The published package is unchanged.
+
+### Added
+
+- `npm run check:release`: checks that version, lock file, CHANGELOG, README, CLI `--version` and git tags agree, and that the repository tracks no example manifests, `node_modules` or oversized files. It runs in CI.
+
 ## [0.1.1] - 2026-11-11
 
 ### Security

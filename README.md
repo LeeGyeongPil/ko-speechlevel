@@ -1,6 +1,6 @@
 # ko-speechlevel
 
-> **English summary** — A deterministic checker that flags Korean sentences whose speech level (honorific style) slips, for example from polite `-습니다/-요` to casual `-해/-다`, and reports exact offsets. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install from GitHub: `npm install github:LeeGyeongPil/ko-speechlevel` (the npm registry release is planned, not published yet).
+> **English summary** — A deterministic checker that flags Korean sentences whose speech level (honorific style) slips, for example from polite `-습니다/-요` to casual `-해/-다`, and reports exact offsets. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install from GitHub: `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2` (the npm registry release is planned, not published yet). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
 
 LLM 답변이 "했습니다"로 시작해 "켜면 돼."로 끝나는 식으로 **말투가 중간에 바뀌는 문제**를 규칙만으로 찾아 주는 검사기입니다. 다른 모델 호출 없이 같은 입력에는 항상 같은 결과가 나오므로, 평가 파이프라인과 CI의 단언(assertion)으로 쓰기 좋습니다.
 
@@ -14,7 +14,7 @@ LLM 답변이 "했습니다"로 시작해 "켜면 돼."로 끝나는 식으로 *
 
 ```bash
 # 프로젝트에 추가 (설치 중 자동으로 빌드됩니다)
-npm install github:LeeGyeongPil/ko-speechlevel
+npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2
 
 # 또는 clone 해서 직접 실행
 git clone https://github.com/LeeGyeongPil/ko-speechlevel.git
@@ -27,6 +27,8 @@ npm start
 # 게시 예정 (아직 동작하지 않음)
 npm install ko-speechlevel
 ```
+
+GitHub 설치는 `prepare` 스크립트로 빌드합니다. npm 의 install script 허용 설정(`ignore-scripts` 등)에 따라 이 빌드가 막히면 `dist` 가 없어 import 가 실패하므로, 설정을 확인하거나 clone 후 `npm install` 로 직접 빌드하세요.
 
 Node.js 22 이상이 필요합니다(Node 설치: <https://nodejs.org/>). 런타임 의존성은 0개입니다. vitest 매처만 선택 사항으로 vitest 5 이상이 필요합니다.
 
@@ -102,8 +104,8 @@ pass=false score=0.67 judged=3
 
 | 대상 | 기본 동작 | 켜는 방법 | 예 |
 |---|---|---|---|
-| 코드: 펜스(```` ``` ````·`~~~`, 닫히지 않은 것 포함), 인라인 코드, 빈 줄 뒤 4칸·탭 들여쓰기 코드(목록 안은 제외) | 판정 안 함 (`code`) | 켤 수 없음 | `echo "설치 완료했다"` |
-| HTML 주석 `<!-- -->` (여러 줄 가능) | 판정 안 함 (`comment`) | 켤 수 없음 | `<!-- 끝났다. -->` |
+| 코드: 펜스(```` ``` ````·`~~~`, 닫히지 않은 것 포함), 인라인 코드, 문서 첫 줄 또는 빈 줄 뒤의 4칸·탭 들여쓰기 코드(목록 안은 제외) | 판정 안 함 (`code`) | 켤 수 없음 | `echo "설치 완료했다"` |
+| HTML 주석 `<!-- -->` (줄 첫머리에서 열면 여러 줄 가능, 줄 중간이면 같은 줄에서 닫힐 때만) | 판정 안 함 (`comment`) | 켤 수 없음 | `<!-- 끝났다. -->` |
 | 강조 `**굵게.**` `*기울임.*` `_밑줄._` `~~취소선.~~` | **판정함** (마크업을 벗겨 어미를 봄, 위치는 원문 기준) | - | `**이제 끝났어.**` → `hae` |
 | 따옴표 안 글, `>` 인용 블록 | 판정 안 함 (`quote`) | `--include quotes` / `include.quotes` | `"이 옵션은 … 꺼져 있다"` |
 | 표(`\|`로 시작하는 줄) | 판정 안 함 (`table`) | `--include tables` / `include.tables` | `\| a \| 켠다 \|` |
@@ -244,11 +246,13 @@ npx vitest run --config examples/vitest.example.config.ts
 
 ### 3. promptfoo 평가의 단언
 
-`examples/promptfoo/speechlevel.mjs` 한 줄로 브리지를 만들고, 케이스에서 파일로 가리킵니다.
+내 프로젝트에서는 `npm install promptfoo` 후 `speechlevel.mjs` 한 줄로 브리지를 만들고, 케이스에서 파일로 가리킵니다.
 
 ```js
 export { default } from 'ko-speechlevel/promptfoo';
 ```
+
+이 레포의 예제(`examples/promptfoo/speechlevel.mjs`)는 설치 없이 돌아가도록 빌드된 `dist` 를 상대 경로로 가져옵니다. 아래 `npm run example:promptfoo` 는 `npx --yes promptfoo@0.125.1` 로 고정 버전을 내려받아 실행하므로 첫 실행에 네트워크가 필요하고 1분 정도 걸립니다. 이 레포에는 promptfoo 의존성 트리(`package.json`·잠금 파일)를 두지 않습니다. promptfoo 와 그 의존성의 보안 공지는 promptfoo 업스트림의 몫이며, 이 라이브러리의 런타임(의존성 0)과는 무관합니다. 예제는 선택이고 라이브러리 사용에는 필요 없습니다.
 
 ```yaml
 assert:
@@ -259,14 +263,17 @@ assert:
 ```
 
 ```bash
-cd examples/promptfoo
-npm install --no-audit --no-fund
-npm run eval
+npm run example:promptfoo
 ```
 
-![promptfoo 평가 결과: 한 케이스 통과, 한 케이스 실패](docs/images/07-promptfoo.png)
+실행하면 끝에 이런 두 줄이 나옵니다(첫 실행의 내려받기 로그는 생략).
 
-*그림 7. 예제는 `echo` 제공자라 프롬프트를 그대로 돌려줍니다. 직접 쓴 두 답변을 검사하며 LLM 호출도 API 키도 없습니다. 샌드박스 같은 제한된 네트워크에서는 promptfoo의 텔레메트리 접속이 거부되었다는 로그가 보일 수 있지만 평가에는 영향이 없습니다. 화면 아래의 `npm notice` 줄은 npm 자체의 업데이트 안내로 이 도구와 무관합니다.*
+```text
+failed case: 1/2 off-level: @11 [hae] 이제 서버를 켜면 돼.
+promptfoo: 1 passed, 1 failed (as expected)
+```
+
+*예제는 `echo` 제공자라 프롬프트를 그대로 돌려줍니다. 직접 쓴 두 답변을 검사하며 LLM 호출도 API 키도 없습니다. 한 케이스는 일부러 실패하도록 만든 것이라 "1 failed (as expected)" 가 정상입니다. 제한된 네트워크에서는 promptfoo 의 텔레메트리 접속이 거부되었다는 로그가 보일 수 있지만 평가에는 영향이 없습니다.*
 
 ### 4. CI에서 쓰기
 
@@ -300,9 +307,8 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 - 문장 끝 명사가 어미처럼 보이는 경우(개발자, 한국어, 분야 등)는 예외 낱말 목록으로만 처리합니다.
 - 간접 인용은 처리하지 않습니다. 건너뛰는 것은 따옴표 안 글과 `>` 인용 블록뿐입니다.
 - 표는 `|` 로 시작하는 줄만 표로 봅니다.
-- 들여쓰기 코드는 빈 줄 뒤 목록 밖에서만 코드로 봅니다. 목록 근처의 4칸 들여쓴 글은 판정합니다.
-- 줄 첫머리가 아닌 곳에서 열고 닫지 않은 `<!--` 는 문서 끝까지 주석으로 보고 가립니다. 그 뒤의 반말은 놓칩니다(HTML을 설명할 때는 백틱으로 감싸세요).
-- 문서 맨 앞에서 바로 시작하는 4칸·탭 들여쓰기 코드는 코드로 보지 않고 판정합니다(오탐 가능).
+- 들여쓰기 코드는 문서 첫 줄 또는 빈 줄 뒤, 목록 밖에서만 코드로 봅니다. 목록 근처의 4칸 들여쓴 글은 판정합니다.
+- 줄 중간에 `<` 가 겹친 뒤 `<!--` 가 오는 드문 입력(`a <<!-- …`)은 그 뒤 문서 끝까지 HTML 주석으로 보고 가립니다(놓치는 쪽).
 - 괄호로 끝나는 문장(`끝났어(진짜로).`)은 괄호 안 낱말로 어미를 읽어 `unknown` 이 됩니다.
 
 ### 오탐·미탐 신고
@@ -323,7 +329,7 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 | 종료 코드 2 와 `error: …` | 파일 없음, 크기 초과, 잘못된 `--expect`, 깨진 JSON 줄 등 | 메시지의 안내대로 고칩니다. 입력 오류는 `--exit-zero` 로도 0 이 되지 않습니다 |
 | 인용문 안의 반말이 안 잡힌다 | 따옴표·`>` 인용은 기본 제외 | `--include quotes` |
 | `Cannot find module 'ko-speechlevel'` (clone 에서 예제 실행) | 빌드 전 | `npm install` (또는 `npm run build`) 후 실행 |
-| npm 에서 설치가 안 된다 | 레지스트리에 아직 게시 전 | `npm install github:LeeGyeongPil/ko-speechlevel` |
+| npm 에서 설치가 안 된다 | 레지스트리에 아직 게시 전 | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2` |
 
 ## 버전·호환성
 
@@ -334,8 +340,9 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 
 ```bash
 npm install
-npm test            # 빌드 후 vitest 실행: 7개 파일, 202개 테스트
+npm test            # 빌드 후 vitest 실행: 8개 파일, 218개 테스트
 npm run check:pack  # 패키지 내용·exports 점검
+npm run check:release  # 버전·CHANGELOG·태그 정합 점검
 ```
 
 버그 제보 방법은 위 "오탐·미탐 신고"를 보세요. 보안 문제는 [SECURITY.md](SECURITY.md)를 보세요.
