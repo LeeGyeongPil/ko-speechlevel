@@ -15,6 +15,8 @@ jobs:
         node: ["22", "24", "26"]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # tags are needed by check:release
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
@@ -24,3 +26,4 @@ jobs:
       - run: npm run check:pack
         env:
           REQUIRE_README: "1"
+      - run: npm run check:release

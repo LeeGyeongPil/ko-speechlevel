@@ -1,6 +1,6 @@
 {
   "name": "ko-speechlevel",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Deterministic Korean speech-level (honorific) consistency checker for LLM output: flags sentences that slip from polite to casual, with offsets. Library, CLI, promptfoo assertion, vitest matcher, streaming checker.",
   "keywords": ["korean", "speech-level", "honorific", "llm", "evaluation", "promptfoo", "vitest", "assertion", "lint"],
   "license": "MIT",
@@ -27,6 +27,8 @@
     "test": "vitest run",
     "start": "npm run build && node dist/cli.js check examples/answers/polite.md examples/answers/mixed.md examples/answers/quoted-source.md --expect polite --exit-zero",
     "check:pack": "npm run build && node scripts/check-pack.mjs",
+    "check:release": "npm run build && node scripts/check-release.mjs",
+    "example:promptfoo": "npm run build && node examples/promptfoo/run-eval.mjs",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run check:pack"
   },
