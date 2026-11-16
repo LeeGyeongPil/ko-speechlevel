@@ -135,10 +135,32 @@ describe('check-release git rules', () => {
     writeFileSync(join(root, 'notes.txt'), 'more');
     git(root, 'add', '-A');
     git(root, 'commit', '-q', '-m', 'later');
-    expect(run(root, opts).problems.join('\n')).toMatch(/tag v1\.2\.3 points to .*not HEAD/);
+    const ahead = run(root, opts);
+    expect(ahead.problems).toEqual([]);
+    expect(ahead.lines[0]).toMatch(/tag v1\.2\.3 -> [0-9a-f]{7} \(HEAD is 1 commits ahead\)/);
+    expect(run(root, { ...opts, requireTag: true }).problems.join('\n')).toMatch(/tag v1\.2\.3 points to .*not HEAD.*never move a published tag/);
+    expect(run(root, { ...opts, tag: 'v1.2.3' }).problems.join('\n')).toMatch(/not HEAD/);
 
     git(root, 'tag', 'v1.3.0');
     expect(run(root, opts).problems.join('\n')).toMatch(/tag v1\.3\.0 is not lower than version 1\.2\.3/);
+  });
+
+  it.skipIf(!hasGit)('fails when the version tag is not an ancestor of HEAD, with or without options', () => {
+    const root = project();
+    git(root, 'init', '-q');
+    git(root, 'add', '-A');
+    git(root, 'commit', '-q', '-m', 'init');
+    git(root, 'checkout', '-q', '-b', 'other');
+    writeFileSync(join(root, 'side.txt'), 'side');
+    git(root, 'add', '-A');
+    git(root, 'commit', '-q', '-m', 'side');
+    git(root, 'tag', 'v1.2.3');
+    git(root, 'checkout', '-q', '-');
+    writeFileSync(join(root, 'main.txt'), 'main');
+    git(root, 'add', '-A');
+    git(root, 'commit', '-q', '-m', 'main');
+    expect(run(root, opts).problems.join('\n')).toMatch(/not an ancestor of HEAD/);
+    expect(run(root, { ...opts, requireTag: true }).problems.join('\n')).toMatch(/not an ancestor of HEAD/);
   });
 
   it.skipIf(!hasGit)('rejects tracked node_modules paths and files over 1 MiB', () => {

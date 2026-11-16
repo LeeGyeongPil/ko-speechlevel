@@ -128,8 +128,21 @@ export function checkRelease(root, options = {}) {
     if (tags.includes(expected)) {
       const target = git(root, ['rev-list', '-n', '1', expected]);
       const head = git(root, ['rev-parse', 'HEAD']);
-      if (target !== head) problems.push(`tag ${expected} points to ${target?.slice(0, 7)}, not HEAD ${head?.slice(0, 7)}; never move a published tag, bump the version instead`);
-      tagLine = `tag ${expected} -> HEAD; older tags: ${older.sort((a, b) => compare(a.slice(1), b.slice(1))).join(' ') || '(none)'}`;
+      const olderText = older.sort((a, b) => compare(a.slice(1), b.slice(1))).join(' ') || '(none)';
+      tagLine = `tag ${expected} -> HEAD; older tags: ${olderText}`;
+      if (target !== head) {
+        const releaseTime = Boolean(options.tag || options.requireTag);
+        const isAncestor = spawnSync('git', ['merge-base', '--is-ancestor', expected, 'HEAD'], { cwd: root, timeout: 30_000 }).status === 0;
+        if (!isAncestor) {
+          problems.push(`tag ${expected} points to ${target?.slice(0, 7)}, which is not an ancestor of HEAD ${head?.slice(0, 7)}; never move a published tag, bump the version instead`);
+        } else if (releaseTime) {
+          problems.push(`tag ${expected} points to ${target?.slice(0, 7)}, not HEAD ${head?.slice(0, 7)}; never move a published tag, bump the version instead`);
+        } else {
+          // Ordinary CI after release: docs/chore commits on top of the tagged release are fine.
+          const ahead = git(root, ['rev-list', '--count', `${expected}..HEAD`]) ?? '?';
+          tagLine = `tag ${expected} -> ${target?.slice(0, 7)} (HEAD is ${ahead} commits ahead); older tags: ${olderText}`;
+        }
+      }
     } else if (options.requireTag) {
       problems.push(`tag ${expected} does not exist yet (--require-tag)`);
     } else {
