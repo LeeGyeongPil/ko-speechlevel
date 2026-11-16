@@ -2,7 +2,7 @@
 
 [한국어](README.md) | **English**
 
-A deterministic checker that finds Korean sentences whose speech level (honorific style) slips partway through a text. An LLM answer may start with "했습니다" (polite) and end with "켜면 돼." (casual); this tool catches that using rules alone and reports exact offsets. It makes no model calls, so the same input always gives the same result, which suits evaluation pipelines and CI assertions. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install from GitHub: `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2` (the npm registry release is planned, not published yet). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
+A deterministic checker that finds Korean sentences whose speech level (honorific style) slips partway through a text. An LLM answer may start with "했습니다" (polite) and end with "켜면 돼." (casual); this tool catches that using rules alone and reports exact offsets. It makes no model calls, so the same input always gives the same result, which suits evaluation pipelines and CI assertions. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install from GitHub: `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.3` (the npm registry release is planned, not published yet). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
 
 ![Result of checking an answer with mixed speech levels: the line:column of the offending sentence and the verdict are shown, and the exit code is 1](docs/images/01-check-fail.png)
 
@@ -14,7 +14,7 @@ For now, install from GitHub. Publishing to the npm registry is **planned** and 
 
 ```bash
 # Add to your project (it builds automatically during install)
-npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2
+npm install github:LeeGyeongPil/ko-speechlevel#v0.1.3
 
 # Or clone and run it directly
 git clone https://github.com/LeeGyeongPil/ko-speechlevel.git
@@ -331,7 +331,7 @@ Confirmed cases are added as one row to the regression table `test/regression-ta
 | Exit code 2 with `error: …` | A missing file, too large an input, an invalid `--expect`, a broken JSON line, etc. | Fix it as the message says. Input errors do not become 0 even with `--exit-zero` |
 | Casual speech inside a quotation is not caught | Quotation marks and `>` quotes are excluded by default | `--include quotes` |
 | `Cannot find module 'ko-speechlevel'` (running an example in a clone) | Not built yet | Run `npm install` (or `npm run build`) first |
-| It cannot be installed from npm | It is not published to the registry yet | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.2` |
+| It cannot be installed from npm | It is not published to the registry yet | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.3` |
 
 ## Versions and compatibility
 
@@ -342,7 +342,7 @@ Confirmed cases are added as one row to the regression table `test/regression-ta
 
 ```bash
 npm install
-npm test            # build, then run vitest: 8 files, 218 tests
+npm test            # build, then run vitest: 8 files, 219 tests
 npm run check:pack  # check package contents and exports
 npm run check:release  # check version, CHANGELOG and tag consistency
 ```

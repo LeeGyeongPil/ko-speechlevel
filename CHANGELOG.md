@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-16
+
+### Fixed
+
+- `npm run check:release` no longer fails in CI when the version tag is an ancestor of HEAD but not on it (for example after later commits). The tag check now requires the tag to be an ancestor of HEAD; `--require-tag` and `--tag` still demand it points at HEAD, and a published tag is never moved.
+
 ## [0.1.2] - 2026-11-11
 
 ### Fixed
