@@ -2,7 +2,7 @@
 
 [한국어](README.md) | **English**
 
-A deterministic checker that finds Korean sentences whose speech level (honorific style) slips partway through a text. An LLM answer may start with "했습니다" (polite) and end with "켜면 돼." (casual); this tool catches that using rules alone and reports exact offsets. It makes no model calls, so the same input always gives the same result, which suits evaluation pipelines and CI assertions. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install with `npm install ko-speechlevel` (registry latest is 0.1.2; for the newest tag use `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4`). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
+A deterministic checker that finds Korean sentences whose speech level (honorific style) slips partway through a text. An LLM answer may start with "했습니다" (polite) and end with "켜면 돼." (casual); this tool catches that using rules alone and reports exact offsets. It makes no model calls, so the same input always gives the same result, which suits evaluation pipelines and CI assertions. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install with `npm install ko-speechlevel` (registry latest is 0.1.2; for the newest tag use `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5`). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
 
 ![Result of checking an answer with mixed speech levels: the line:column of the offending sentence and the verdict are shown, and the exit code is 1](docs/images/01-check-fail.png)
 
@@ -10,7 +10,7 @@ A deterministic checker that finds Korean sentences whose speech level (honorifi
 
 ## Install
 
-Install from the npm registry. The latest published version is 0.1.2 (checked 2026-11-19), and the latest repo tag is v0.1.4. The only differences are a fix to the CI release check and documentation, so the library behaves the same.
+Install from the npm registry. The latest published version is 0.1.2 (checked 2026-11-19), and the latest repo tag is v0.1.5. The differences are a CI release-check fix, documentation, and a scanner sentence-boundary fix (casual sentences after `ㅎㅎ` or `:)`).
 
 ```bash
 # Add to your project
@@ -21,7 +21,7 @@ If you need the latest repo tag, install from GitHub or clone and run it directl
 
 ```bash
 # Install from the GitHub tag (it builds automatically during install)
-npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4
+npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5
 
 # Or clone and run it directly
 git clone https://github.com/LeeGyeongPil/ko-speechlevel.git
@@ -314,6 +314,7 @@ The two approaches are not replacements for each other. Items that rules can sor
 - Indented code is recognized only at the first line of the document or after a blank line, and outside lists. Text indented by 4 spaces near a list is judged.
 - In the rare input where `<` is repeated mid-line and then `<!--` follows (`a <<!-- …`), everything after it to the end of the document is treated as an HTML comment and masked (it errs on the side of missing things).
 - A sentence that ends with a parenthesis (`끝났어(진짜로).`) reads its ending from the word inside the parentheses and becomes `unknown`.
+- A casual sentence that ends in `^^` without a period can merge with the next sentence and be missed (`ㅎㅎ`, `ㅋㅋ` and `:)` are treated as sentence ends).
 
 ### Reporting false positives and false negatives
 
@@ -333,7 +334,7 @@ Confirmed cases are added as one row to the regression table `test/regression-ta
 | Exit code 2 with `error: …` | A missing file, too large an input, an invalid `--expect`, a broken JSON line, etc. | Fix it as the message says. Input errors do not become 0 even with `--exit-zero` |
 | Casual speech inside a quotation is not caught | Quotation marks and `>` quotes are excluded by default | `--include quotes` |
 | `Cannot find module '…/dist/index.js'` (running an example in a clone) | Not built yet | Run `npm install` (or `npm run build`) first |
-| The version installed from npm is older than the repo's latest | The registry release (0.1.2) is older than the latest repo tag (0.1.4) | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4` |
+| The version installed from npm is older than the repo's latest | The registry release (0.1.2) is older than the latest repo tag (0.1.4) | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5` |
 
 ## Versions and compatibility
 
@@ -344,7 +345,7 @@ Confirmed cases are added as one row to the regression table `test/regression-ta
 
 ```bash
 npm install
-npm test            # build, then run vitest: 8 files, 219 tests
+npm test            # build, then run vitest: 8 files, 223 tests
 npm run check:pack  # check package contents and exports
 npm run check:release  # check version, CHANGELOG and tag consistency
 ```

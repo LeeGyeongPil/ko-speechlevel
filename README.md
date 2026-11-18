@@ -2,7 +2,7 @@
 
 **한국어** | [English](README.en.md)
 
-> **English summary** — A deterministic checker that flags Korean sentences whose speech level (honorific style) slips, for example from polite `-습니다/-요` to casual `-해/-다`, and reports exact offsets. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install with `npm install ko-speechlevel` (registry latest is 0.1.2; for the newest tag use `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4`). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
+> **English summary** — A deterministic checker that flags Korean sentences whose speech level (honorific style) slips, for example from polite `-습니다/-요` to casual `-해/-다`, and reports exact offsets. It has no runtime dependencies and ships as a library, a CLI, a streaming checker, a promptfoo assertion and a vitest matcher. Install with `npm install ko-speechlevel` (registry latest is 0.1.2; for the newest tag use `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5`). The GitHub install builds via a `prepare` script, which npm's install-script settings (e.g. `ignore-scripts`) may block.
 
 LLM 답변이 "했습니다"로 시작해 "켜면 돼."로 끝나는 식으로 **말투가 중간에 바뀌는 문제**를 규칙만으로 찾아 주는 검사기입니다. 다른 모델 호출 없이 같은 입력에는 항상 같은 결과가 나오므로, 평가 파이프라인과 CI의 단언(assertion)으로 쓰기 좋습니다.
 
@@ -12,7 +12,7 @@ LLM 답변이 "했습니다"로 시작해 "켜면 돼."로 끝나는 식으로 *
 
 ## 설치
 
-npm 레지스트리에서 설치합니다. 레지스트리의 최신 게시 버전은 0.1.2 이고(2026-11-19 확인), 레포 최신 태그는 v0.1.4 입니다. 두 버전의 차이는 CI 의 릴리스 검사 수정과 문서뿐이라 라이브러리 동작은 같습니다.
+npm 레지스트리에서 설치합니다. 레지스트리의 최신 게시 버전은 0.1.2 이고(2026-11-19 확인), 레포 최신 태그는 v0.1.5 입니다. 두 버전의 차이는 CI 릴리스 검사·문서 수정과 스캐너 문장 경계 수정(ㅎㅎ·:) 뒤 반말 문장)입니다.
 
 ```bash
 # 프로젝트에 추가
@@ -23,7 +23,7 @@ npm install ko-speechlevel
 
 ```bash
 # GitHub 태그에서 설치 (설치 중 자동으로 빌드됩니다)
-npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4
+npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5
 
 # 또는 clone 해서 직접 실행
 git clone https://github.com/LeeGyeongPil/ko-speechlevel.git
@@ -314,6 +314,7 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 - 들여쓰기 코드는 문서 첫 줄 또는 빈 줄 뒤, 목록 밖에서만 코드로 봅니다. 목록 근처의 4칸 들여쓴 글은 판정합니다.
 - 줄 중간에 `<` 가 겹친 뒤 `<!--` 가 오는 드문 입력(`a <<!-- …`)은 그 뒤 문서 끝까지 HTML 주석으로 보고 가립니다(놓치는 쪽).
 - 괄호로 끝나는 문장(`끝났어(진짜로).`)은 괄호 안 낱말로 어미를 읽어 `unknown` 이 됩니다.
+- 마침표 없이 `^^` 로 끝난 반말 문장은 다음 문장과 합쳐져 놓칠 수 있습니다(`ㅎㅎ`·`ㅋㅋ`·`:)` 는 문장 끝으로 봅니다).
 
 ### 오탐·미탐 신고
 
@@ -333,7 +334,7 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 | 종료 코드 2 와 `error: …` | 파일 없음, 크기 초과, 잘못된 `--expect`, 깨진 JSON 줄 등 | 메시지의 안내대로 고칩니다. 입력 오류는 `--exit-zero` 로도 0 이 되지 않습니다 |
 | 인용문 안의 반말이 안 잡힌다 | 따옴표·`>` 인용은 기본 제외 | `--include quotes` |
 | `Cannot find module '…/dist/index.js'` (clone 에서 예제 실행) | 빌드 전 | `npm install` (또는 `npm run build`) 후 실행 |
-| npm 에서 받은 버전이 레포 최신보다 낮다 | 레지스트리 게시 버전(0.1.2)이 레포 최신 태그(0.1.4)보다 낮다 | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.4` |
+| npm 에서 받은 버전이 레포 최신보다 낮다 | 레지스트리 게시 버전(0.1.2)이 레포 최신 태그(0.1.5)보다 낮다 | `npm install github:LeeGyeongPil/ko-speechlevel#v0.1.5` |
 
 ## 버전·호환성
 
@@ -344,7 +345,7 @@ node dist/cli.js check examples/answers/polite.md --expect polite   # 위반이 
 
 ```bash
 npm install
-npm test            # 빌드 후 vitest 실행: 8개 파일, 219개 테스트
+npm test            # 빌드 후 vitest 실행: 8개 파일, 223개 테스트
 npm run check:pack  # 패키지 내용·exports 점검
 npm run check:release  # 버전·CHANGELOG·태그 정합 점검
 ```

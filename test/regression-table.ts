@@ -34,6 +34,7 @@ export const rows: Row[] = [
   { name: 'emoji after polite ending', text: '좋아요😊 다음은 뭐 할까요?', options: polite, violations: [] },
   { name: 'emoji at the very end', text: '완료했습니다 ✅', options: polite, violations: [] },
   { name: 'laughter jamo after haeyo', text: '정말 좋아요ㅋㅋ', options: polite, violations: [] },
+  { name: 'laughter jamo then polite sentence', text: '정말 좋아요ㅋㅋ 다음은 뭐 할까요?', options: polite, violations: [] },
   { name: 'quote then polite body', text: '"안녕하세요" 라고 말했습니다.', options: polite, violations: [] },
   { name: 'url with dots', text: '자세한 내용은 https://example.com/a.b 에서 봅니다.', options: polite, violations: [] },
   { name: 'question ending in haeyo', text: '무엇이 필요한가요?', options: polite, violations: [] },
@@ -162,4 +163,7 @@ export const rowsRound2: Row[] = [
   },
   { name: 'plain sentence after an HTML comment', text: '<!-- 메모 -->\n끝났다.', options: polite, violations: ['끝났다.'] },
   { name: 'plain sentence before an HTML comment', text: '준비됐다 <!-- 메모입니다 -->', options: polite, violations: ['준비됐다 <!-- 메모입니다 -->'] },
+  { name: 'casual sentence ending in laughter jamo', text: '설치가 끝났습니다. 이제 켜면 돼 ㅎㅎ 문제가 있으면 알려 주세요.', options: polite, violations: ['이제 켜면 돼 ㅎㅎ'] },
+  { name: 'casual sentence ending in text smiley', text: '설치가 끝났습니다. 이제 켜면 돼 :) 문제가 있으면 알려 주세요.', options: polite, violations: ['이제 켜면 돼 :)'] },
+  { name: 'casual sentence ending in nosed smiley', text: '설치가 끝났습니다. 이제 켜면 돼 ;-) 문제가 있으면 알려 주세요.', options: polite, violations: ['이제 켜면 돼 ;-)'] },
 ];

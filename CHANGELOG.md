@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-19
+
+### Fixed
+
+- A casual sentence ending in laughter jamo (`ㅎㅎ`, `ㅋㅋ`) or a text smiley (`:)`, `;)`, `:-)`) without a period is no longer merged with the next polite sentence, so the `hae` violation is reported. The boundary follows the same rule as emoji (next character is a space and the ending is recognizable). `^^` is still not recognized (see Known limitations).
+- A sentence whose last word ends in `-` (for example a trailing hyphen before a boundary) is now read for its ending as well, instead of being skipped.
+
 ## [0.1.4] - 2026-11-19
 
 ### Documentation

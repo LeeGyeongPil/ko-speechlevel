@@ -7,7 +7,7 @@ const TAIL_LIMIT = 96;
 // Trailing punctuation, brackets, emoji (with joiners/variation selectors) and Hangul jamo
 // laughter such as "ㅋㅋ" that are skipped before looking at the final word.
 const TRAILING_NOISE =
-  /[\s.!?~*_…。,·)\]}"'”’」』>:;‍️ㄱ-ㆎ\p{Extended_Pictographic}\p{Emoji_Modifier}]+$/u;
+  /[\s.!?~\-*_…。,·)\]}"'”’」』>:;‍️ㄱ-ㆎ\p{Extended_Pictographic}\p{Emoji_Modifier}]+$/u;
 const LAST_WORD = /[가-힣]+$/u;
 
 // Nouns that end like a verb ending. Without these they would be mistaken for a speech level.

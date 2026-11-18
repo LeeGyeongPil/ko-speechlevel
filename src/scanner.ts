@@ -51,6 +51,16 @@ function isEmojiChar(ch: string): boolean {
   return cp > 0xff && (cp === 0x200d || cp === 0xfe0f || EMOJI.test(ch));
 }
 
+// Compatibility jamo (ㅎㅎ, ㅋㅋ) and text smileys (":)", ";)", ":-)") end a casual sentence like an emoji.
+function isJamoChar(ch: string): boolean {
+  const cp = ch.codePointAt(0) ?? 0;
+  return cp >= 0x3131 && cp <= 0x318e;
+}
+
+function endsSmileyEyes(tail: string): boolean {
+  return /[:;]-?$/.test(tail);
+}
+
 type Phase = 'start' | 'lead' | 'body';
 
 interface Pending {
@@ -556,8 +566,10 @@ export class Scanner {
       if (p && p.kind === 'term') {
         p.ordinal = false;
         p.abbreviation = false;
+      } else if (!p && ch === ')' && endsSmileyEyes(this.tail)) {
+        this.pend = { kind: 'emoji', ordinal: false, abbreviation: false, prevHangul: false };
       }
-    } else if (isEmojiChar(ch)) {
+    } else if (isEmojiChar(ch) || isJamoChar(ch)) {
       if (!this.pend) this.pend = { kind: 'emoji', ordinal: false, abbreviation: false, prevHangul: false };
     }
     this.pushTail(ch);
@@ -570,7 +582,7 @@ export class Scanner {
     if (!p) return;
     if (p.kind === 'term') {
       if (TERMINATORS.has(ch) || CLOSERS.has(ch)) return;
-    } else if (isEmojiChar(ch)) {
+    } else if (isEmojiChar(ch) || isJamoChar(ch)) {
       return;
     }
     this.pend = null;
