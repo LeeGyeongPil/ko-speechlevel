@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-19
+
+### Documentation
+
+- README install section now shows `npm install ko-speechlevel` as the primary install (the package is published on the npm registry; registry latest at the time of writing is 0.1.2) and keeps the GitHub tag install as an alternative.
+- Troubleshooting: corrected the missing-module symptom text and replaced the outdated "not on npm" row.
+- Noted npm 11's `allowScripts` warning for GitHub installs.
+
 ## [0.1.3] - 2026-11-16
 
 ### Fixed
